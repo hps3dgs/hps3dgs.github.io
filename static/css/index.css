@@ -2,6 +2,18 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
+html {
+  scroll-padding-top: 4rem;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.10);
+}
+
 .summary-note { max-width: 900px; margin: 1rem auto 1.5rem; color: #555; text-align: center; font-size: .92rem; line-height: 1.65; }
 .protocol-note { margin: 1.5rem 0 2rem; padding: 1.2rem 1.5rem; background: #f5f8fc; border-left: 3px solid #3273dc; border-radius: 6px; }
 .method-details { margin-top: 1.25rem; }

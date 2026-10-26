@@ -1,0 +1,460 @@
+- generic [active] [ref=e1]:
+  - navigation "main navigation" [ref=e2]:
+    - generic [ref=e4]:
+      - link "Home" [ref=e5] [cursor=pointer]:
+        - /url: "#top"
+      - link "Abstract" [ref=e9] [cursor=pointer]:
+        - /url: "#abstract"
+      - link "Method" [ref=e10] [cursor=pointer]:
+        - /url: "#method"
+      - link "Results" [ref=e11] [cursor=pointer]:
+        - /url: "#results"
+      - link "BibTeX" [ref=e12] [cursor=pointer]:
+        - /url: "#bibtex"
+  - generic [ref=e17]:
+    - heading "Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects" [level=1] [ref=e18]
+    - generic [ref=e19]: "---- Blind Review Version ----"
+    - generic [ref=e21]:
+      - generic [ref=e22]: Paper
+      - link "Code" [ref=e29] [cursor=pointer]:
+        - /url: https://github.com/DazhuangYang/pahc3dgs
+    - generic [ref=e34]:
+      - generic [ref=e36]:
+        - generic [ref=e37]: 15×
+        - generic [ref=e38]: storage compression
+      - generic [ref=e40]:
+        - generic [ref=e41]: 0.7 MB
+        - generic [ref=e42]: compact payload
+      - generic [ref=e44]:
+        - generic [ref=e45]: 39 dB
+        - generic [ref=e46]: high-fidelity rendering
+  - generic [ref=e50]:
+    - heading "Abstract" [level=2] [ref=e51]
+    - paragraph [ref=e53]: "While 3D Gaussian Splatting (3DGS) has revolutionized real-time photorealistic rendering, its unstructured and discrete nature introduces critical storage and telemetry limitations for robotic and spaceborne perception platforms. Existing 3DGS compression methods are predominantly driven by signal-level redundancy, while explicit sharing of repeated component structures offers an additional route to compression for aerospace objects. To explicitly capitalize on these industrial priors, we propose hierarchical prototype sharing for 3DGS compression, in which the compression paradigm is shifted toward semantic-level structural reassembly. Specifically, a geometry layer condenses repetitive structures into compact meta templates via a coarse-to-fine cascade: spectral divergence pruning, robust rigid alignment, and alternating differentiable refinement. Subsequently, an appearance layer exploits material sparsity through component-wise vector quantization. Extensive evaluations across diverse aerospace scenarios, including high-fidelity synthetic models and real-world mock-ups, demonstrate that our method effectively copes with the rate-distortion bottlenecks of current compression paradigms. It reduces the explicit 3D representation to approximately 0.7 MB, achieving a storage compression ratio of at least 15× while maintaining high-fidelity visual quality above 39 dB. By combining structural sharing with appearance encoding, our method preserves structural integrity and delivers a memory-efficient 3D representation for bandwidth-constrained autonomous perception."
+  - generic [ref=e54]: Your browser does not support the video tag.
+  - generic [ref=e58]:
+    - heading "Method Overview" [level=2] [ref=e61]
+    - generic [ref=e62]:
+      - 'img "Hierarchical prototype sharing: semantic decomposition, rigid template sharing, and quantized appearance encoding" [ref=e63]'
+      - paragraph [ref=e64]:
+        - strong [ref=e65]: The overall pipeline of the proposed framework.
+        - text: First, an unstructured Gaussian field is decomposed into semantic components. Then, a hierarchical representation is constructed with a geometry layer and an appearance layer. Finally, the compact data is packed for efficient storage and real-time rendering.
+    - generic [ref=e68]:
+      - img "Space-ground computation architecture" [ref=e69]
+      - paragraph [ref=e70]:
+        - strong [ref=e71]: Integrated space-ground computational architecture for on-orbit servicing missions.
+        - text: Multi-view imagery is downlinked for training and compression on the ground. Compact models are uplinked for reconstruction and downstream perception; the diagram illustrates the intended architecture.
+  - generic [ref=e73]:
+    - generic [ref=e74]:
+      - heading "Results" [level=2] [ref=e77]
+      - iframe [ref=e78]:
+        - generic [ref=f1e2]:
+          - generic [ref=f1e3]: Rate–Distortion across Compression Settings
+          - generic [ref=f1e4]:
+            - generic "Interaction toolbar for rate-distortion chart" [ref=f1e5]:
+              - button "Pan mode" [pressed] [ref=f1e6] [cursor=pointer]
+              - button "Zoom selection mode" [ref=f1e7] [cursor=pointer]
+              - button "Reset view" [ref=f1e8] [cursor=pointer]
+            - generic [ref=f1e9]:
+              - 'group "Stored size versus PSNR: 11 methods, five settings per method" [ref=f1e10]':
+                - generic [ref=f1e11]:
+                  - generic [ref=f1e12]:
+                    - generic [ref=f1e13]: "0"
+                    - generic [ref=f1e14]: "1"
+                    - generic [ref=f1e15]: "2"
+                    - generic [ref=f1e16]: "3"
+                    - generic [ref=f1e17]: "4"
+                    - generic [ref=f1e18]: "5"
+                    - generic [ref=f1e19]: "30"
+                    - generic [ref=f1e20]: "32"
+                    - generic [ref=f1e21]: "34"
+                    - generic [ref=f1e22]: "36"
+                    - generic [ref=f1e23]: "38"
+                    - generic [ref=f1e24]: "40"
+                    - generic [ref=f1e25]: "42"
+                    - generic [ref=f1e26]: "44"
+                  - generic [ref=f1e28]: Stored size (MB)
+                  - generic [ref=f1e29]: PSNR (dB)
+                  - generic [ref=f1e30]:
+                    - generic [ref=f1e31]:
+                      - img "HAC, 0.3924 MB, 37.3663 dB, setting 5" [ref=f1e33]
+                      - img "HAC, 0.4058 MB, 38.2623 dB, setting 4" [ref=f1e36]
+                      - img "HAC, 0.4320 MB, 39.0212 dB, setting 3" [ref=f1e39]
+                      - img "HAC, 0.4804 MB, 40.1075 dB, setting 2" [ref=f1e42]
+                      - img "HAC, 0.5205 MB, 41.1979 dB, setting 1" [ref=f1e45]
+                    - generic [ref=f1e48]:
+                      - img "HAC++, 0.3724 MB, 30.9365 dB, setting 5" [ref=f1e50]
+                      - img "HAC++, 0.3762 MB, 31.1696 dB, setting 4" [ref=f1e53]
+                      - img "HAC++, 0.3768 MB, 31.7165 dB, setting 3" [ref=f1e56]
+                      - img "HAC++, 0.3830 MB, 32.4012 dB, setting 2" [ref=f1e59]
+                      - img "HAC++, 0.3848 MB, 32.7488 dB, setting 1" [ref=f1e62]
+                    - generic [ref=f1e65]:
+                      - img "Scaffold-GS, 2.1430 MB, 42.6218 dB, setting 5" [ref=f1e67]
+                      - img "Scaffold-GS, 2.6005 MB, 42.8582 dB, setting 4" [ref=f1e70]
+                      - img "Scaffold-GS, 2.9458 MB, 43.0326 dB, setting 3" [ref=f1e73]
+                      - img "Scaffold-GS, 3.7678 MB, 43.3913 dB, setting 2" [ref=f1e76]
+                      - img "Scaffold-GS, 5.4410 MB, 43.8644 dB, setting 1" [ref=f1e79]
+                    - generic [ref=f1e82]:
+                      - img "CompGS, 0.8435 MB, 41.5707 dB, setting 5" [ref=f1e84]
+                      - img "CompGS, 0.9457 MB, 41.7400 dB, setting 4" [ref=f1e87]
+                      - img "CompGS, 1.1125 MB, 41.9336 dB, setting 3" [ref=f1e90]
+                      - img "CompGS, 1.2473 MB, 42.0021 dB, setting 2" [ref=f1e93]
+                      - img "CompGS, 1.8883 MB, 41.9506 dB, setting 1" [ref=f1e96]
+                    - generic [ref=f1e99]:
+                      - img "EAGLES, 0.4069 MB, 38.5397 dB, q = 0.50" [ref=f1e101]
+                      - img "EAGLES, 1.0208 MB, 40.9131 dB, q = 0.35" [ref=f1e104]
+                      - img "EAGLES, 1.9290 MB, 41.9761 dB, q = 0.25" [ref=f1e107]
+                      - img "EAGLES, 3.4250 MB, 42.1561 dB, q = 0.15" [ref=f1e110]
+                      - img "EAGLES, 5.4928 MB, 42.1645 dB, q = 0.05" [ref=f1e113]
+                    - generic [ref=f1e116]:
+                      - img "LightGaussian, 0.5129 MB, 37.1501 dB, Prune = 0.85; VQ = 0.80" [ref=f1e118]
+                      - img "LightGaussian, 0.9012 MB, 39.0363 dB, Prune = 0.75; VQ = 0.70" [ref=f1e121]
+                      - img "LightGaussian, 1.3274 MB, 39.9045 dB, Prune = 0.66; VQ = 0.60" [ref=f1e124]
+                      - img "LightGaussian, 1.8891 MB, 40.7695 dB, Prune = 0.55; VQ = 0.50" [ref=f1e127]
+                      - img "LightGaussian, 2.7001 MB, 41.4495 dB, Prune = 0.40; VQ = 0.40" [ref=f1e130]
+                    - generic [ref=f1e133]:
+                      - img "GSCodec, 0.2324 MB, 31.0165 dB, Retention = 0.15; lambda = 0.002" [ref=f1e135]
+                      - img "GSCodec, 0.4228 MB, 33.3040 dB, Retention = 0.25; lambda = 0.002" [ref=f1e138]
+                      - img "GSCodec, 0.6759 MB, 35.3265 dB, Retention = 0.4; lambda = 0.002" [ref=f1e141]
+                      - img "GSCodec, 0.9722 MB, 36.6005 dB, Retention = 0.6; lambda = 0.002" [ref=f1e144]
+                      - img "GSCodec, 1.2522 MB, 36.8131 dB, Retention = 1; lambda = 0.002" [ref=f1e147]
+                    - generic [ref=f1e150]:
+                      - img "Ours, 0.3415 MB, 39.2286 dB, Nominal K = 512" [ref=f1e152]
+                      - img "Ours, 0.4030 MB, 39.8654 dB, Nominal K = 1024" [ref=f1e155]
+                      - img "Ours, 0.5121 MB, 40.4353 dB, Nominal K = 2048" [ref=f1e158]
+                      - img "Ours, 0.7153 MB, 40.8786 dB, Nominal K = 4096" [ref=f1e161]
+                      - img "Ours, 1.0878 MB, 41.2541 dB, Nominal K = 8192" [ref=f1e164]
+                    - generic [ref=f1e167]:
+                      - img "Ours (w/o Low-bit), 0.6108 MB, 39.2297 dB, Nominal K = 512" [ref=f1e169]
+                      - img "Ours (w/o Low-bit), 0.7203 MB, 39.8663 dB, Nominal K = 1024" [ref=f1e172]
+                      - img "Ours (w/o Low-bit), 0.9230 MB, 40.4365 dB, Nominal K = 2048" [ref=f1e175]
+                      - img "Ours (w/o Low-bit), 1.3121 MB, 40.8798 dB, Nominal K = 4096" [ref=f1e178]
+                      - img "Ours (w/o Low-bit), 2.0341 MB, 41.2550 dB, Nominal K = 8192" [ref=f1e181]
+                    - generic [ref=f1e184]:
+                      - img "Ours (w/o QAT), 0.3363 MB, 34.2622 dB, Nominal K = 512" [ref=f1e186]
+                      - img "Ours (w/o QAT), 0.3975 MB, 35.4912 dB, Nominal K = 1024" [ref=f1e189]
+                      - img "Ours (w/o QAT), 0.5071 MB, 36.7946 dB, Nominal K = 2048" [ref=f1e192]
+                      - img "Ours (w/o QAT), 0.7140 MB, 37.9564 dB, Nominal K = 4096" [ref=f1e195]
+                      - img "Ours (w/o QAT), 1.0994 MB, 39.3038 dB, Nominal K = 8192" [ref=f1e198]
+                    - generic [ref=f1e201]:
+                      - img "HAC + Ours, 0.2428 MB, 38.5619 dB, lambda = 0.004" [ref=f1e203]
+                      - img "HAC + Ours, 0.2726 MB, 39.8614 dB, lambda = 0.002" [ref=f1e206]
+                      - img "HAC + Ours, 0.3279 MB, 41.0983 dB, lambda = 0.001" [ref=f1e209]
+                      - img "HAC + Ours, 0.3892 MB, 42.1090 dB, lambda = 0.0005" [ref=f1e212]
+                      - img "HAC + Ours, 0.4885 MB, 43.1059 dB, lambda = 0.0002" [ref=f1e215]
+              - generic "Toggle method visibility" [ref=f1e218]:
+                - button "Show HAC" [pressed] [ref=f1e219] [cursor=pointer]: HAC
+                - button "Show HAC++" [pressed] [ref=f1e222] [cursor=pointer]: HAC++
+                - button "Show Scaffold-GS" [pressed] [ref=f1e225] [cursor=pointer]: Scaffold-GS
+                - button "Show CompGS" [pressed] [ref=f1e228] [cursor=pointer]: CompGS
+                - button "Show EAGLES" [pressed] [ref=f1e231] [cursor=pointer]: EAGLES
+                - button "Show LightGaussian" [pressed] [ref=f1e234] [cursor=pointer]: LightGaussian
+                - button "Show GSCodec" [pressed] [ref=f1e237] [cursor=pointer]: GSCodec
+                - button "Show Ours" [pressed] [ref=f1e240] [cursor=pointer]: Ours
+                - button "Show Ours (w/o Low-bit)" [pressed] [ref=f1e243] [cursor=pointer]: Ours (w/o Low-bit)
+                - button "Show Ours (w/o QAT)" [pressed] [ref=f1e246] [cursor=pointer]: Ours (w/o QAT)
+                - button "Show HAC + Ours" [pressed] [ref=f1e249] [cursor=pointer]: HAC + Ours
+      - iframe [ref=e79]:
+        - generic [ref=f2e2]:
+          - generic [ref=f2e3]: Default-Configuration Comparison
+          - generic [ref=f2e5]:
+            - generic [ref=f2e6]:
+              - generic [ref=f2e7]: Size vs Number of Points
+              - generic "Interaction toolbar for points chart" [ref=f2e8]:
+                - button "Pan mode" [ref=f2e9] [cursor=pointer]:
+                  - img "Pan" [ref=f2e10]
+                - button "Zoom selection mode" [ref=f2e11] [cursor=pointer]:
+                  - img "Zoom" [ref=f2e12]
+                - button "Reset view" [ref=f2e13] [cursor=pointer]:
+                  - img "Reset" [ref=f2e14]
+              - generic [ref=f2e15]:
+                - img "Size vs Number of Points chart" [ref=f2e16]:
+                  - generic [ref=f2e18]:
+                    - generic [ref=f2e19]: "0"
+                    - generic [ref=f2e20]: "4"
+                    - generic [ref=f2e21]: "8"
+                    - generic [ref=f2e22]: "12"
+                    - generic [ref=f2e23]: "16"
+                    - generic [ref=f2e24]: "20"
+                    - generic [ref=f2e25]: "2"
+                    - generic [ref=f2e26]: "3"
+                    - generic [ref=f2e27]: "4"
+                    - generic [ref=f2e28]: "5"
+                    - generic [ref=f2e29]: "6"
+                    - generic [ref=f2e30]: "7"
+                    - generic [ref=f2e31]: "8"
+                    - generic [ref=f2e32]: Size (MB)
+                    - generic [ref=f2e33]: Number of Points
+                    - generic [ref=f2e34]:
+                      - generic [ref=f2e35] [cursor=pointer]
+                      - generic [ref=f2e36] [cursor=pointer]
+                      - generic [ref=f2e37] [cursor=pointer]
+                      - generic [ref=f2e38] [cursor=pointer]
+                      - generic [ref=f2e39] [cursor=pointer]
+                      - generic [ref=f2e40] [cursor=pointer]
+                      - generic [ref=f2e41] [cursor=pointer]
+                      - generic [ref=f2e42] [cursor=pointer]
+                      - generic [ref=f2e43] [cursor=pointer]
+                      - generic [ref=f2e44] [cursor=pointer]
+                      - generic [ref=f2e45] [cursor=pointer]
+                      - generic [ref=f2e46] [cursor=pointer]
+                      - generic [ref=f2e47] [cursor=pointer]
+                      - generic [ref=f2e48] [cursor=pointer]
+                    - generic [ref=f2e49]:
+                      - generic [ref=f2e51]: 3DGS
+                      - generic [ref=f2e53]: 2DGS
+                      - generic [ref=f2e55]: EAGLES
+                      - generic [ref=f2e57]: GSCodec
+                      - generic [ref=f2e59]: LightGaussian
+                      - generic [ref=f2e61]: CompGS
+                      - generic [ref=f2e63]: Ours
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - math:
+                          - generic: ×
+                          - generic:
+                            - generic: "10"
+                            - generic: "4"
+            - generic [ref=f2e64]:
+              - generic [ref=f2e65]: Size vs PSNR
+              - generic "Interaction toolbar for psnr chart" [ref=f2e66]:
+                - button "Pan mode" [ref=f2e67] [cursor=pointer]:
+                  - img "Pan" [ref=f2e68]
+                - button "Zoom selection mode" [ref=f2e69] [cursor=pointer]:
+                  - img "Zoom" [ref=f2e70]
+                - button "Reset view" [ref=f2e71] [cursor=pointer]:
+                  - img "Reset" [ref=f2e72]
+              - img "Size vs PSNR chart" [ref=f2e74]:
+                - generic [ref=f2e76]:
+                  - generic [ref=f2e77]: "0"
+                  - generic [ref=f2e78]: "4"
+                  - generic [ref=f2e79]: "8"
+                  - generic [ref=f2e80]: "12"
+                  - generic [ref=f2e81]: "16"
+                  - generic [ref=f2e82]: "20"
+                  - generic [ref=f2e83]: "32"
+                  - generic [ref=f2e84]: "34"
+                  - generic [ref=f2e85]: "36"
+                  - generic [ref=f2e86]: "38"
+                  - generic [ref=f2e87]: "40"
+                  - generic [ref=f2e88]: "42"
+                  - generic [ref=f2e89]: "44"
+                  - generic [ref=f2e90]: Size (MB)
+                  - generic [ref=f2e91]: PSNR (dB)
+                  - generic [ref=f2e92]:
+                    - generic [ref=f2e93] [cursor=pointer]
+                    - generic [ref=f2e94] [cursor=pointer]
+                    - generic [ref=f2e95] [cursor=pointer]
+                    - generic [ref=f2e96] [cursor=pointer]
+                    - generic [ref=f2e97] [cursor=pointer]
+                    - generic [ref=f2e98] [cursor=pointer]
+                    - generic [ref=f2e99] [cursor=pointer]
+                    - generic [ref=f2e100] [cursor=pointer]
+                    - generic [ref=f2e101] [cursor=pointer]
+                    - generic [ref=f2e102] [cursor=pointer]
+                    - generic [ref=f2e103] [cursor=pointer]
+                    - generic [ref=f2e104] [cursor=pointer]
+                    - generic [ref=f2e105] [cursor=pointer]
+                    - generic [ref=f2e106] [cursor=pointer]
+                    - generic [ref=f2e107] [cursor=pointer]
+                    - generic [ref=f2e108] [cursor=pointer]
+                    - generic [ref=f2e109] [cursor=pointer]
+                    - generic [ref=f2e110] [cursor=pointer]
+                    - generic [ref=f2e111] [cursor=pointer]
+                    - generic [ref=f2e112] [cursor=pointer]
+                    - generic [ref=f2e113] [cursor=pointer]
+                    - generic [ref=f2e114] [cursor=pointer]
+                  - generic [ref=f2e115]:
+                    - generic [ref=f2e117]: 3DGS
+                    - generic [ref=f2e119]: 2DGS
+                    - generic [ref=f2e121]: EAGLES
+                    - generic [ref=f2e123]: GSCodec
+                    - generic [ref=f2e125]: LightGaussian
+                    - generic [ref=f2e127]: CompGS
+                    - generic [ref=f2e129]: Ours
+                    - generic [ref=f2e131]: Scaffold-GS
+                    - generic [ref=f2e133]: HAC
+                    - generic [ref=f2e135]: HAC++
+                    - generic [ref=f2e137]: HAC + Ours
+          - paragraph [ref=f2e138]: Mean results over five SPARD sequences, using the default configurations in the paper. PSNR measures reconstruction over the 150 training views in each sequence.
+          - paragraph [ref=f2e139]: The points panel is restricted to standalone explicit representations. Anchor-based baselines (Scaffold-GS, HAC, HAC++) and the HAC + Ours hybrid are shown only in the PSNR panel.
+      - iframe [ref=e80]:
+        - generic [ref=f3e2]:
+          - generic [ref=f3e3]: Trade-offs in Structural Sharing and Appearance Capacity
+          - generic [ref=f3e5]:
+            - generic [ref=f3e6]:
+              - generic [ref=f3e7]:
+                - text: Ablation on the pruning rejection threshold
+                - math [ref=f3e18]:
+                  - generic [ref=f3e19]:
+                    - generic [ref=f3e20]: τ
+                    - generic [ref=f3e21]: r
+              - generic "Interaction toolbar for thresh chart" [ref=f3e22]:
+                - button "Pan mode" [ref=f3e23] [cursor=pointer]:
+                  - img "Pan" [ref=f3e24]
+                - button "Zoom selection mode" [ref=f3e25] [cursor=pointer]:
+                  - img "Zoom" [ref=f3e26]
+                - button "Reset view" [ref=f3e27] [cursor=pointer]:
+                  - img "Reset" [ref=f3e28]
+              - generic [ref=f3e29]:
+                - img "Threshold ablation" [ref=f3e30]:
+                  - generic [ref=f3e31]:
+                    - generic [ref=f3e32]:
+                      - generic [ref=f3e33]: "10"
+                      - generic [ref=f3e34]: "16.8"
+                      - generic [ref=f3e35]: "23.6"
+                      - generic [ref=f3e36]: "30.4"
+                      - generic [ref=f3e37]: "37.2"
+                      - generic [ref=f3e38]: "44"
+                      - generic [ref=f3e39]: "31"
+                      - generic [ref=f3e40]: "33.8"
+                      - generic [ref=f3e41]: "36.6"
+                      - generic [ref=f3e42]: "39.4"
+                      - generic [ref=f3e43]: "42.2"
+                      - generic [ref=f3e44]: "45"
+                    - generic [ref=f3e45]: Quantized PSNR (dB)
+                    - generic [ref=f3e77]:
+                      - generic [ref=f3e79]: SS-1A (Real)
+                      - generic [ref=f3e81]: SS-1A (Virtual)
+                      - generic [ref=f3e83]: Proba-2
+                      - generic [ref=f3e85]: Venus Express
+                      - generic [ref=f3e87]: Acrimsat
+                - generic:
+                  - text: Storage Compression Ratio (
+                  - generic:
+                    - generic:
+                      - generic:
+                        - math:
+                          - generic:
+                            - generic: CR
+                            - generic: s
+                          - generic: ×
+                  - text: )
+            - generic [ref=f3e88]:
+              - generic [ref=f3e89]:
+                - text: Ablation on the codebook size
+                - math [ref=f3e100]:
+                  - generic [ref=f3e101]:
+                    - generic [ref=f3e102]: K
+                    - generic [ref=f3e103]: m
+              - generic "Interaction toolbar for codebook chart" [ref=f3e104]:
+                - button "Pan mode" [ref=f3e105] [cursor=pointer]:
+                  - img "Pan" [ref=f3e106]
+                - button "Zoom selection mode" [ref=f3e107] [cursor=pointer]:
+                  - img "Zoom" [ref=f3e108]
+                - button "Reset view" [ref=f3e109] [cursor=pointer]:
+                  - img "Reset" [ref=f3e110]
+              - generic [ref=f3e111]:
+                - img "Codebook ablation" [ref=f3e112]:
+                  - generic [ref=f3e113]:
+                    - generic [ref=f3e114]:
+                      - generic [ref=f3e115]: "8"
+                      - generic [ref=f3e116]: "18.4"
+                      - generic [ref=f3e117]: "28.8"
+                      - generic [ref=f3e118]: "39.2"
+                      - generic [ref=f3e119]: "49.6"
+                      - generic [ref=f3e120]: "60"
+                      - generic [ref=f3e121]: "36.5"
+                      - generic [ref=f3e122]: "38.0"
+                      - generic [ref=f3e123]: "39.6"
+                      - generic [ref=f3e124]: "41.1"
+                      - generic [ref=f3e125]: "42.7"
+                      - generic [ref=f3e126]: "44.2"
+                    - generic [ref=f3e127]: Quantized PSNR (dB)
+                    - generic [ref=f3e159]:
+                      - generic [ref=f3e161]: SS-1A (Real)
+                      - generic [ref=f3e163]: SS-1A (Virtual)
+                      - generic [ref=f3e165]: Proba-2
+                      - generic [ref=f3e167]: Venus Express
+                      - generic [ref=f3e169]: Acrimsat
+                - generic:
+                  - text: Storage Compression Ratio (
+                  - generic:
+                    - generic:
+                      - generic:
+                        - math:
+                          - generic:
+                            - generic: CR
+                            - generic: s
+                          - generic: ×
+                  - text: )
+          - paragraph [ref=f3e170]:
+            - text: "Outlined points mark the shared default: τ"
+            - subscript [ref=f3e171]: r
+            - text: = 0.005 and K
+            - subscript [ref=f3e172]: m
+            - text: = 4096. Each curve follows the measured parameter order. Hover a point for its setting.
+          - paragraph [ref=f3e173]:
+            - text: The threshold sweep uses nominal K
+            - subscript [ref=f3e174]: m
+            - text: = 4096; Proba-2 has actual K = 3385 / 3453 / 3341 at τ
+            - subscript [ref=f3e175]: r
+            - text: = 0.007 / 0.009 / 0.011. In the codebook sweep, its nominal K
+            - subscript [ref=f3e176]: m
+            - text: = 8192 is capped at 7264.
+    - generic [ref=e81]:
+      - heading "Visual Comparisons" [level=3] [ref=e82]
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - generic [ref=e86]: SS-1A (Real) - 2.20 MB
+            - generic [ref=e87]:
+              - img "Ground Truth" [ref=e90]
+              - img "Ours" [ref=e93]
+              - 'slider "SS-1A (Real) - 2.20 MB: image comparison" [ref=e94]':
+                - generic [ref=e95]: «»
+            - generic [ref=e96]:
+              - generic [ref=e97]: Ground Truth
+              - generic [ref=e98]: Ours
+          - generic [ref=e99]:
+            - generic [ref=e100]: SS-1A (Virtual) - 2.83 MB
+            - generic [ref=e101]:
+              - img "Ground Truth" [ref=e104]
+              - img "Ours" [ref=e107]
+              - 'slider "SS-1A (Virtual) - 2.83 MB: image comparison" [ref=e108]':
+                - generic [ref=e109]: «»
+            - generic [ref=e110]:
+              - generic [ref=e111]: Ground Truth
+              - generic [ref=e112]: Ours
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: Acrimsat - 1.26 MB
+            - generic [ref=e116]:
+              - img "Ground Truth" [ref=e119]
+              - img "Ours" [ref=e122]
+              - 'slider "Acrimsat - 1.26 MB: image comparison" [ref=e123]':
+                - generic [ref=e124]: «»
+            - generic [ref=e125]:
+              - generic [ref=e126]: Ground Truth
+              - generic [ref=e127]: Ours
+          - generic [ref=e128]:
+            - generic [ref=e129]: Proba-2 - 2.48 MB
+            - generic [ref=e130]:
+              - img "Ground Truth" [ref=e133]
+              - img "Ours" [ref=e136]
+              - 'slider "Proba-2 - 2.48 MB: image comparison" [ref=e137]':
+                - generic [ref=e138]: «»
+            - generic [ref=e139]:
+              - generic [ref=e140]: Ground Truth
+              - generic [ref=e141]: Ours
+          - generic [ref=e142]:
+            - generic [ref=e143]: Venus Express - 1.98 MB
+            - generic [ref=e144]:
+              - img "Ground Truth" [ref=e147]
+              - img "Ours" [ref=e150]
+              - 'slider "Venus Express - 1.98 MB: image comparison" [ref=e151]':
+                - generic [ref=e152]: «»
+            - generic [ref=e153]:
+              - generic [ref=e154]: Ground Truth
+              - generic [ref=e155]: Ours
+  - generic [ref=e157]:
+    - heading "Downstream Pose Refinement" [level=2] [ref=e158]
+    - figure [ref=e159]:
+      - generic "Ground-truth and estimated trajectories for circular observation and spiral approach" [ref=e160]: Your browser does not support the video tag.
+  - generic [ref=e162]:
+    - heading "BibTeX" [level=2] [ref=e163]
+    - code [ref=e165]: "@misc{HPS3DGS2026, title = {Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects}, year = {2026}, note = {Blind review manuscript} }"
+  - contentinfo [ref=e166]:
+    - paragraph [ref=e171]: This site presents Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects.
