@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="figure">
-    <div class="title">Structural Efficiency and Rate-Distortion Comparison</div>
+    <div class="title">Default-Configuration Comparison</div>
     <div style="height: 16px;"></div>
 
     <div class="grid">
@@ -54,23 +54,30 @@
         </div>
       </div>
     </div>
+    <p class="note">Mean results over five SPARD sequences, using the default configurations in the paper. PSNR measures reconstruction over the 150 training views in each sequence.</p>
+    <p class="note">The points panel is restricted to standalone explicit representations. Anchor-based baselines (Scaffold-GS, HAC, HAC++) and the HAC + Ours hybrid are shown only in the PSNR panel.</p>
   </div>
 
   <script>
-    const methods = ['3DGS', '2DGS', 'EAGLES', 'GSCodec', 'LightGaussian', 'Scaffold-GS', 'CompGS', 'Ours'];
-    const sizes = [16.82, 8.288, 2.26, 2.34, 6.41, 8.46, 2.46, 2.15];
-    const points = [74730, 37459, 54949, 58755, 24979, 32300, 74730, 59837];
-    const psnrs = [40.88, 35.43, 33.67, 34.26, 35.00, 41.88, 35.53, 34.27];
-    const markers = ['circle', 'square', 'triangle-right', 'triangle-up', 'triangle-down', 'triangle-left', 'diamond', 'pentagon'];
+    // Default configurations from gs-zip.tex, tab:comparison (2026-10-26).
+    // Anchor-based representations are excluded from the Gaussian-count panel.
+    const methods = ['3DGS', '2DGS', 'EAGLES', 'GSCodec', 'LightGaussian', 'CompGS', 'Ours', 'Scaffold-GS', 'HAC', 'HAC++', 'HAC + Ours'];
+    const sizes = [17.69, 8.40, 3.42, 1.25, 1.33, 1.11, 0.72, 3.77, 0.48, 0.38, 0.33];
+    const points = [74933, 34403, 73387, 50143, 25478, 35789, 23227, null, null, null, null];
+    const psnrs = [43.22, 36.39, 42.16, 36.81, 39.90, 41.93, 40.88, 43.39, 40.11, 32.40, 41.10];
+    const markers = ['circle', 'square', 'triangle-right', 'triangle-up', 'triangle-down', 'diamond', 'pentagon', 'triangle-left', 'square', 'diamond', 'pentagon'];
     const colors = [
       [0.00, 0.45, 0.74],
       [0.85, 0.33, 0.10],
       [0.47, 0.67, 0.19],
       [0.49, 0.18, 0.56],
       [0.64, 0.08, 0.18],
-      [0.85, 0.65, 0.15],
       [0.15, 0.60, 0.55],
-      [0.90, 0.10, 0.10]
+      [0.90, 0.10, 0.10],
+      [0.85, 0.65, 0.15],
+      [0.25, 0.38, 0.62],
+      [0.45, 0.45, 0.45],
+      [0.60, 0.10, 0.38]
     ];
 
     const markerSize = (method) => method === 'Ours' ? 12 : 10;
@@ -255,7 +262,7 @@
 
       const defaultDomain = {
         xMin: 0,
-        xMax: 18,
+        xMax: Math.ceil(Math.max(...sizes) * 1.1 / 2) * 2,
         yMin: config.yMin,
         yMax: config.yMax
       };
@@ -354,7 +361,7 @@
           ...config,
           xScale,
           yScale,
-          xTicks: createLinearTicks(domain.xMin, domain.xMax, 10),
+          xTicks: createLinearTicks(domain.xMin, domain.xMax, 6),
           yTicks: createLinearTicks(domain.yMin, domain.yMax, 7),
           formatXTick: config.formatXTickDynamic
             ? config.formatXTickDynamic(domain)
@@ -368,6 +375,7 @@
 
         const seriesGroup = svgEl('g', { 'clip-path': `url(#${clipId})` });
         data.forEach((method, index) => {
+          if (!Number.isFinite(method.value)) return;
           const x = xScale(sizes[index]);
           const y = yScale(method.value);
           const color = `rgb(${colors[index].map((c) => Math.round(c * 255)).join(',')})`;
@@ -428,14 +436,14 @@
         // svg legend at right-bottom (match ablation style but keep inside plot)
         const legendSvg = svgEl('g');
         const itemH = 18;
-        const items = methods.map((label, index) => ({ label, color: `rgb(${colors[index].map((c) => Math.round(c * 255)).join(',')})` }));
+        const items = data.map((method, index) => ({ label: method.name, value: method.value, marker: markers[index], color: `rgb(${colors[index].map((c) => Math.round(c * 255)).join(',')})` })).filter(item => Number.isFinite(item.value));
         const totalH = items.length * itemH;
-        let lx = inner.left + inner.width - 100; // legend left
+        let lx = inner.left + inner.width - 124; // legend left
         let ly = inner.top + inner.height - totalH - 6;
         if (ly < inner.top + 6) ly = inner.top + 6;
         items.forEach((it, idx) => {
           // draw the marker shape for legend using the same markerPath helper
-          const markerD = markerPath(markers[idx], lx + 6, ly + 4, 6);
+          const markerD = markerPath(it.marker, lx + 6, ly + 4, 6);
           const markerPathEl = svgEl('path', { d: markerD, fill: it.color, stroke: it.color, 'stroke-width': 1 });
           legendSvg.appendChild(markerPathEl);
           const t = svgEl('text', { x: lx + 18, y: ly + 8, class: 'legend-label' });
@@ -685,9 +693,9 @@
       xLabel: 'Size (MB)',
       tooltipLabel: 'PSNR',
       xTicks: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18],
-      yTicks: [32.5, 34, 35.5, 37, 38.5, 40, 41.5],
-      yMin: 32.5,
-      yMax: 42.5,
+      yTicks: [32, 34, 36, 38, 40, 42, 44],
+      yMin: 32,
+      yMax: 44,
       formatXTick: (tick) => tick,
       formatYTick: (tick) => tick.toFixed(1),
       formatValue: (value) => `${formatNumber(value)} dB`

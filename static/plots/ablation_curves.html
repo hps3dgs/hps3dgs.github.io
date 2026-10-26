@@ -14,7 +14,7 @@
 </head>
 <body>
   <div class="figure small-figure">
-    <div class="title"> Trade-offs in Geometric Strictness and Material Capacity </div>
+    <div class="title">Trade-offs in Structural Sharing and Appearance Capacity</div>
     <div style="height: 16px;"></div>
     <div class="grid">
 
@@ -59,41 +59,77 @@
       </div>
 
     </div>
+    <p class="note">Outlined points mark the shared default: &tau;<sub>r</sub> = 0.005 and K<sub>m</sub> = 4096. Each curve follows the measured parameter order. Hover a point for its setting.</p>
+    <p class="note">The threshold sweep uses nominal K<sub>m</sub> = 4096; Proba-2 has actual K = 3385 / 3453 / 3341 at &tau;<sub>r</sub> = 0.007 / 0.009 / 0.011. In the codebook sweep, its nominal K<sub>m</sub> = 8192 is capped at 7264.</p>
   </div>
 
   <script>
-    // Data ported directly from the MATLAB scripts
+    // Static data from the current paper's THRESH.m and plot_ablation_codebook.m.
+    // Both default points reuse the Table 2 Full / Table 3 Ours packages.
+    // CR_s uses complete original FP32 ZIP bytes / complete compact ZIP bytes.
     const codebookData = {
-      cr: {
-        SS1A_Real: [10.14, 9.48, 8.39, 6.82, 4.97],
-        SS1A_Virtual: [11.50, 10.77, 9.80, 8.44, 6.50],
-        Proba2: [13.93, 12.21, 8.94, 5.81, 3.38],
-        VenusExpress: [13.73, 11.33, 9.30, 7.81, 5.70],
-        Acrimsat: [11.52, 10.67, 9.31, 7.40, 5.34]
-      },
-      psnr: {
-        SS1A_Real: [34.2148, 34.4934, 35.8133, 37.2212, 38.0036],
-        SS1A_Virtual: [31.5549, 32.9597, 34.0935, 33.9100, 34.0867],
-        Proba2: [28.7721, 28.5989, 29.1826, 34.9500, 36.0542],
-        VenusExpress: [26.9562, 27.6435, 28.9523, 30.8000, 31.1720],
-        Acrimsat: [32.6506, 33.7051, 34.3619, 36.7767, 37.8317]
-      },
-      Km: {
-        SS1A_Real: [512, 1024, 2048, 4096, 8192],
-        SS1A_Virtual: [512, 1024, 2048, 4096, 8192],
-        Proba2: [512, 1024, 2048, 4096, 8192],
-        VenusExpress: [512, 1024, 2048, 4096, 8192],
-        Acrimsat: [512, 1024, 2048, 4096, 8192]
-      }
-    };
+  "cr": {
+    "SS1A_Real": [49.35913892271, 41.941852250808, 32.952885557843, 23.482011321115, 15.290659901166],
+    "SS1A_Virtual": [56.165295759492, 49.222182272572, 40.678666473986, 31.057768405707, 21.500812304809],
+    "Proba2": [49.803923859977, 37.031270515544, 25.4044196297, 15.940302291079, 9.767094074224],
+    "VenusExpress": [48.895034316607, 42.398412443097, 34.394819584712, 25.443623258015, 17.131089866816],
+    "Acrimsat": [53.341622211823, 44.542832208821, 34.296843439662, 23.887278117255, 15.315805361132]
+  },
+  "psnr": {
+    "SS1A_Real": [39.858266614278, 40.187117513021, 40.542518285116, 40.865611546834, 41.091056543986],
+    "SS1A_Virtual": [38.800667559306, 39.682173487345, 40.426321907043, 41.02885509491, 41.659190419515],
+    "Proba2": [38.202973709106, 39.062853431702, 39.88611735026, 40.286219660441, 40.643198254903],
+    "VenusExpress": [38.072118047078, 38.545089912415, 38.957825800578, 39.381056315104, 39.715036214193],
+    "Acrimsat": [41.209030749003, 41.850009396871, 42.363891334534, 42.831030451457, 43.161834996541]
+  },
+  "Km": {
+    "SS1A_Real": [512, 1024, 2048, 4096, 8192],
+    "SS1A_Virtual": [512, 1024, 2048, 4096, 8192],
+    "Proba2": [512, 1024, 2048, 4096, 8192],
+    "VenusExpress": [512, 1024, 2048, 4096, 8192],
+    "Acrimsat": [512, 1024, 2048, 4096, 8192]
+  },
+  "actualK": {
+    "SS1A_Real": [512, 1024, 2048, 4096, 8192],
+    "SS1A_Virtual": [512, 1024, 2048, 4096, 8192],
+    "Proba2": [512, 1024, 2048, 4096, 7264],
+    "VenusExpress": [512, 1024, 2048, 4096, 8192],
+    "Acrimsat": [512, 1024, 2048, 4096, 8192]
+  }
+};
 
     const threshData = {
-      Acrimsat: { cr: [6.63, 7.40, 7.84, 8.76, 9.98], psnr: [41.5199, 36.7767, 32.1826, 31.5537, 26.6007], tao: [0.003, 0.005, 0.007, 0.009, 0.011] },
-      Proba2:   { cr: [5.25, 5.81, 5.83, 5.83, 5.83], psnr: [36.3312, 34.95, 30.8047, 30.4836, 30.7302], tao: [0.003, 0.005, 0.007, 0.009, 0.011]  },
-      SS1A_Virtual: { cr: [8.01, 8.44, 9.33, 9.62, 9.71], psnr: [35.8448, 33.91, 29.2386, 26.8140, 26.2718], tao: [0.003, 0.005, 0.007, 0.009, 0.011]  },
-      VenusExpress: { cr: [7.25, 7.81, 8.21, 9.40, 9.68], psnr: [31.6816, 30.8, 29.5542, 28.0708, 26.8478], tao: [0.003, 0.005, 0.007, 0.009, 0.011]  },
-      SS1A_Real: { cr: [6.72, 6.82, 7.11, 7.11, 7.11], psnr: [37.4680, 37.2212, 36.0255, 35.7580, 35.6331], tao: [0.003, 0.005, 0.007, 0.009, 0.011]  }
-    };
+  "SS1A_Real": {
+    "cr": [22.636986560666, 23.482011321115, 23.474932664441, 24.898975057553, 24.879809078292],
+    "psnr": [41.004430618286, 40.865611546834, 40.794518254598, 40.273502197266, 40.241440798442],
+    "tao": [0.003, 0.005, 0.007, 0.009, 0.011],
+    "actualK": [4096, 4096, 4096, 4096, 4096]
+  },
+  "SS1A_Virtual": {
+    "cr": [30.134551009484, 31.057768405707, 32.284176, 32.571524, 40.488475412274],
+    "psnr": [41.431991551717, 41.02885509491, 40.5345, 40.476, 36.984739901225],
+    "tao": [0.003, 0.005, 0.007, 0.009, 0.011],
+    "actualK": [4096, 4096, 4096, 4096, 4096]
+  },
+  "Proba2": {
+    "cr": [12.515679271971, 15.940302291079, 20.957813353732, 20.597398273571, 21.361894206886],
+    "psnr": [43.946269493103, 40.286219660441, 35.703611907959, 35.876426900228, 35.603234570821],
+    "tao": [0.003, 0.005, 0.007, 0.009, 0.011],
+    "actualK": [4096, 4096, 3385, 3453, 3341]
+  },
+  "VenusExpress": {
+    "cr": [24.956034617477, 25.443623258015, 30.223382019973, 40.633649317267, 40.510858133231],
+    "psnr": [39.558242670695, 39.381056315104, 37.855823898315, 32.869287605286, 32.727676798503],
+    "tao": [0.003, 0.005, 0.007, 0.009, 0.011],
+    "actualK": [4096, 4096, 4096, 4096, 4096]
+  },
+  "Acrimsat": {
+    "cr": [20.896463942825, 23.887278117255, 24.90783667916, 27.407799173213, 29.446275270247],
+    "psnr": [43.576175041199, 42.831030451457, 42.38920539856, 39.434222691854, 35.37723467509],
+    "tao": [0.003, 0.005, 0.007, 0.009, 0.011],
+    "actualK": [4096, 4096, 4096, 4096, 4096]
+  }
+};
 
     const seriesOrder = ['SS1A_Real','SS1A_Virtual','Proba2','VenusExpress','Acrimsat'];
     const seriesNames = {
@@ -204,7 +240,8 @@
           // create circles (visual points) and attach event listeners so hovering points also highlights series
           pts.forEach((p,i)=>{
             const cx = xScale(p.x), cy = yScale(p.y);
-            const circle = svgEl('circle', {cx, cy, r:6, fill:colors[idx], opacity:0.9, 'data-series':key, 'class':'series-point'});
+            const isDefault = i === (svgId === 'codebook-chart' ? 3 : 1);
+            const circle = svgEl('circle', {cx, cy, r:6, fill:colors[idx], opacity:0.9, stroke:isDefault ? '#111' : 'none', 'stroke-width':isDefault ? 2.5 : 0, 'data-series':key, 'data-default':isDefault, 'class':'series-point'});
             // event handlers will reuse the same closures as the path handlers
             seriesGroup.appendChild(circle);
 
@@ -228,7 +265,9 @@
               : (dataSets && dataSets[key] && Array.isArray(dataSets[key].tao))
                 ? `<br>\\(\\tau_r\\): ${dataSets[key].tao[pointIndex]}`
                 : '';
-            const html = `CR: ${point.x}<br>PSNR: ${point.y.toFixed(2)} dB${extra}`;
+            const actualK = svgId === 'codebook-chart' ? dataSets.actualK[key][pointIndex] : dataSets[key].actualK[pointIndex];
+            const isDefault = pointIndex === (svgId === 'codebook-chart' ? 3 : 1);
+            const html = `<strong>${seriesNames[key]}</strong>CR<sub>s</sub>: ${point.x.toFixed(2)}&times;<br>PSNR: ${point.y.toFixed(2)} dB${extra}<br>Actual K: ${actualK}${isDefault ? '<br><b>Default configuration</b>' : ''}`;
             const rect = svg.parentElement.getBoundingClientRect();
             tooltip.style.left = (ev.clientX - rect.left + 12) + 'px';
             tooltip.style.top = (ev.clientY - rect.top + 12) + 'px';
@@ -355,16 +394,16 @@
       return { svg, g, inner, xScale, yScale };
     }
 
-    // Render left (codebook)
-    drawPanel('codebook-chart','codebook-tooltip', codebookData, [3.0,14.5], [25.4,39]);
+    // Render codebook sweep with the current MATLAB plot limits.
+    drawPanel('codebook-chart','codebook-tooltip', codebookData, [8,60], [36.5,44.2]);
 
-    // Render right (threshold) — THRESH.m had tighter x/y limits
+    // Render threshold sweep; include every measured operating point.
     // For threshData we use stored objects with cr/psnr per series key
     const threshNormalized = {};
     ['SS1A_Real','SS1A_Virtual','Proba2','VenusExpress','Acrimsat'].forEach(k=>{
       threshNormalized[k] = threshData[k] || null;
     });
-    drawPanel('thresh-chart','thresh-tooltip', threshNormalized, [4.5,10.5], [24,43]);
+    drawPanel('thresh-chart','thresh-tooltip', threshNormalized, [10,44], [31,45]);
   </script>
 </body>
 </html>

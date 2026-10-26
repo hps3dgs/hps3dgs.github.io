@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rate–Distortion Comparison</title>
+  <link rel="stylesheet" href="../css/plots.css">
+  <script>
+    // The host fits the iframe to .figure; suppress nested scrollbars during resize.
+    if (window.self !== window.top) document.documentElement.classList.add('embedded-chart');
+  </script>
+  <style>
+    html.embedded-chart, html.embedded-chart body { overflow: hidden; }
+    .figure { display: flow-root; overflow-wrap: anywhere; }
+    .panel { margin-top: 16px; height: 540px; box-sizing: border-box; display: flex; flex-direction: column; }
+    .interaction-toolbar { flex: 0 0 24px; }
+    .chart-wrap { flex: 1; min-width: 0; min-height: 0; overflow: clip; touch-action: none; user-select: none; }
+    .chart-wrap > svg { height: 100%; }
+    .note:last-child { margin-bottom: 0; }
+    .tooltip { display: none; left: 0; top: 0; transform: none; min-width: 0; max-width: min(240px, 100%); box-sizing: border-box; }
+    .method-legend { position: absolute; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 10px; background: rgba(255, 255, 255, .94); border: 1px solid #ddd; border-radius: 6px; transform-origin: bottom right; }
+    .method-key { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 12px; line-height: 18px; white-space: nowrap; cursor: pointer; }
+    .method-key[aria-pressed="false"] { opacity: .4; text-decoration: line-through; }
+    .method-key svg { width: 32px; height: 16px; overflow: visible; }
+    .method-key:focus-visible, .tool-btn:focus-visible { outline: 2px solid #2f80d6; outline-offset: 3px; }
+    .series-point:focus { outline: none; }
+    .series-point:focus .point-mark { stroke-width: 3; }
+    @media (max-width: 540px) {
+      .figure { padding: 8px 4px; }
+      .panel { height: 480px; padding: 8px 4px 6px; }
+      .method-legend { gap: 1px; padding: 6px; }
+      .method-key { font-size: 10px; line-height: 15px; gap: 4px; }
+      .method-key svg { width: 26px; height: 14px; }
+      .axis-label, .tick-label { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="figure">
+    <div class="title">Rate–Distortion across Compression Settings</div>
+    <div class="panel">
+      <div class="interaction-toolbar" aria-label="Interaction toolbar for rate-distortion chart">
+        <button class="tool-btn is-active" id="tool-pan-rate" type="button" aria-label="Pan mode" aria-pressed="true" title="Pan">
+          <img class="tool-img" src="../logo/move-light.svg" alt="" data-dark="../logo/move.svg" data-light="../logo/move-light.svg">
+        </button>
+        <button class="tool-btn" id="tool-zoom-rate" type="button" aria-label="Zoom selection mode" aria-pressed="false" title="Zoom selection">
+          <img class="tool-img" src="../logo/zoom-out.svg" alt="" data-dark="../logo/zoom-out.svg" data-light="../logo/zoom-out-light.svg">
+        </button>
+        <button class="tool-btn" id="tool-home-rate" type="button" aria-label="Reset view" title="Reset view">
+          <img class="tool-img" src="../logo/home.svg" alt="" data-dark="../logo/home.svg" data-light="../logo/home-light.svg">
+        </button>
+      </div>
+      <div class="chart-wrap">
+        <svg id="rate-chart" viewBox="0 0 880 440" role="group" aria-label="Stored size versus PSNR: 11 methods, five settings per method" aria-describedby="chart-help"></svg>
+        <div class="tooltip" id="rate-tooltip" role="tooltip"></div>
+        <div class="selection-rect" id="sel-rate"></div>
+        <div class="method-legend" id="method-legend" aria-label="Toggle method visibility"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Fixed matrices from tase/fig/plot/plot_latest_means.m, copied without rounding.
+    // Keep the MATLAB row order here; sort a copy by size only when drawing.
+    // Display names remove MATLAB legend spacing and use the page's HAC + Ours capitalization.
+    const series = [
+      {"key": "HAC_Mean", "name": "HAC", "color": "#007fff", "marker": "asterisk", "dash": "", "values": [[0.5204502, 41.197871398925784], [0.4804246000000001, 40.10753707885742], [0.43195619999999996, 39.0211784362793], [0.40578899999999996, 38.262349700927736], [0.39243720000000004, 37.36626434326172]]},
+      {"key": "HACpp_Mean", "name": "HAC++", "color": "#00ffff", "marker": "square", "dash": "", "values": [[0.3848142, 32.74879417419434], [0.3829532, 32.40115203857422], [0.376842, 31.7165168762207], [0.376193, 31.16961784362793], [0.37235959999999996, 30.936542129516603]]},
+      {"key": "Scaffold_Mean", "name": "Scaffold-GS", "color": "#db7734", "marker": "triangle-left", "dash": "", "values": [[5.4409808, 43.864359283447264], [3.7678236, 43.391292572021484], [2.9458442000000007, 43.032649993896484], [2.6005192, 42.85816879272461], [2.142951, 42.62181625366211]]},
+      {"key": "CompGS_Mean", "name": "CompGS", "color": "#34db77", "marker": "diamond", "dash": "", "values": [[1.8882614, 41.95063095092773], [1.2472618, 42.00211868286133], [1.112491, 41.933624267578125], [0.9457298, 41.73995819091797], [0.8435302, 41.57069396972656]]},
+      {"key": "EAGLES_Mean", "name": "EAGLES", "color": "#7f00ff", "marker": "triangle-right", "dash": "", "values": [[5.4928458000000004, 42.164546203613284], [3.4249902, 42.15611572265625], [1.9290036000000002, 41.97608642578125], [1.0208092, 40.913072967529295], [0.4069336, 38.539703369140625]], "settings": ["q = 0.05", "q = 0.15", "q = 0.25", "q = 0.35", "q = 0.50"]},
+      {"key": "LightGaussian_Mean", "name": "LightGaussian", "color": "#98db34", "marker": "triangle-down", "dash": "", "values": [[2.7001188, 41.44946060180664], [1.8890888, 40.76950454711914], [1.3274394, 39.90448532104492], [0.9011532, 39.036284637451175], [0.5128748, 37.15008010864258]], "settings": ["Prune = 0.40; VQ = 0.40", "Prune = 0.55; VQ = 0.50", "Prune = 0.66; VQ = 0.60", "Prune = 0.75; VQ = 0.70", "Prune = 0.85; VQ = 0.80"]},
+      {"key": "GSCodec_Mean", "name": "GSCodec", "color": "#ffbf00", "marker": "triangle-up", "dash": "", "values": [[1.2522114, 36.813063049316405], [0.9721754, 36.600545501708986], [0.6758862000000001, 35.3265495300293], [0.4228052, 33.3039794921875], [0.232402, 31.01647186279297]], "settings": ["Retention = 1; lambda = 0.002", "Retention = 0.6; lambda = 0.002", "Retention = 0.4; lambda = 0.002", "Retention = 0.25; lambda = 0.002", "Retention = 0.15; lambda = 0.002"]},
+      {"key": "HPS3DGS_Mean", "name": "Ours", "color": "#ff0000", "marker": "pentagram", "dash": "", "values": [[0.3414582, 39.228611335754], [0.4030414, 39.865448748271], [0.5121122, 40.435334935506], [0.7153174, 40.878554613749], [1.087822, 41.254063285828]], "settings": ["Nominal K = 512", "Nominal K = 1024", "Nominal K = 2048", "Nominal K = 4096", "Nominal K = 8192"]},
+      {"key": "HPS3DGS_native_Mean", "name": "Ours (w/o Low-bit)", "color": "#ff6666", "marker": "cross", "dash": "2 4", "values": [[0.610824, 39.229660471598], [0.7203394, 39.866283086141], [0.9229982, 40.436476531982], [1.3121232, 40.879783147176], [2.0341352, 41.255003219604]], "settings": ["Nominal K = 512", "Nominal K = 1024", "Nominal K = 2048", "Nominal K = 4096", "Nominal K = 8192"]},
+      {"key": "HPS3DGS_ptq_lowbit_Mean", "name": "Ours (w/o QAT)", "color": "#ff6666", "marker": "plus", "dash": "8 4", "values": [[0.3363026, 34.262239756266], [0.3974676, 35.491222730001], [0.5071084, 36.794565559387], [0.714046, 37.956368901571], [1.0994424, 39.303817006429]], "settings": ["Nominal K = 512", "Nominal K = 1024", "Nominal K = 2048", "Nominal K = 4096", "Nominal K = 8192"]},
+      {"key": "HPS3DGS_HAC_lowbit_Mean", "name": "HAC + Ours", "color": "#ff6666", "marker": "asterisk", "dash": "8 3 2 3", "values": [[0.4884706, 43.10592409515381], [0.3892022, 42.1090157623291], [0.32786139999999997, 41.09825951894124], [0.27262000000000003, 39.86137449645996], [0.2427924, 38.56192148081462]], "settings": ["lambda = 0.0002", "lambda = 0.0005", "lambda = 0.001", "lambda = 0.002", "lambda = 0.004"]}
+    ];
+
+    // SVG primitives and domain clamping follow ablation_curves.html.
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+      return el;
+    }
+    function scaleLinear(d0, d1, r0, r1) { return value => r0 + (value - d0) / (d1 - d0) * (r1 - r0); }
+    function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+    function clampDomain(min, max, globalMin, globalMax, minSpan) {
+      const span = Math.min(globalMax - globalMin, Math.max(minSpan, max - min));
+      min = clamp((min + max - span) / 2, globalMin, globalMax - span);
+      return { min, max: min + span };
+    }
+    function niceTicks(min, max, count) {
+      const raw = (max - min) / count;
+      const power = 10 ** Math.floor(Math.log10(raw));
+      const ratio = raw / power;
+      const step = (ratio >= Math.sqrt(50) ? 10 : ratio >= Math.sqrt(10) ? 5 : ratio >= Math.sqrt(2) ? 2 : 1) * power;
+      const ticks = [];
+      for (let value = Math.ceil(min / step) * step; value <= max + step * 1e-8; value += step) {
+        ticks.push(Number(value.toFixed(8)));
+      }
+      return ticks;
+    }
+    // Marker geometry follows size_psnr_num.html, with MATLAB's *, x, + and pentagram added.
+    function markerPath(type, size) {
+      switch (type) {
+        case 'square': return `M ${-size} ${-size} H ${size} V ${size} H ${-size} Z`;
+        case 'triangle-left': return `M ${-size} 0 L ${size} ${-size} L ${size} ${size} Z`;
+        case 'triangle-right': return `M ${-size} ${-size} L ${size} 0 L ${-size} ${size} Z`;
+        case 'triangle-up': return `M 0 ${-size} L ${size} ${size} L ${-size} ${size} Z`;
+        case 'triangle-down': return `M ${-size} ${-size} L ${size} ${-size} L 0 ${size} Z`;
+        case 'diamond': return `M 0 ${-size} L ${size} 0 L 0 ${size} L ${-size} 0 Z`;
+        case 'cross': return `M ${-size} ${-size} L ${size} ${size} M ${-size} ${size} L ${size} ${-size}`;
+        case 'plus': return `M ${-size} 0 H ${size} M 0 ${-size} V ${size}`;
+        case 'asterisk': return `M ${-size} 0 H ${size} M 0 ${-size} V ${size} M ${-size * .7} ${-size * .7} L ${size * .7} ${size * .7} M ${-size * .7} ${size * .7} L ${size * .7} ${-size * .7}`;
+        case 'pentagram': {
+          const points = Array.from({ length: 10 }, (_, i) => {
+            const angle = -Math.PI / 2 + i * Math.PI / 5;
+            const radius = size * (i % 2 ? .4 : 1);
+            return `${radius * Math.cos(angle)} ${radius * Math.sin(angle)}`;
+          });
+          return `M ${points.join(' L ')} Z`;
+        }
+      }
+    }
+    function marker(method, size) {
+      return svgEl('path', { d: markerPath(method.marker, size), fill: ['asterisk', 'cross', 'plus'].includes(method.marker) ? 'none' : method.color, stroke: method.color, 'stroke-width': 1.6, class: 'point-mark' });
+    }
+
+    const svg = document.getElementById('rate-chart');
+    const wrap = svg.parentElement;
+    const tooltip = document.getElementById('rate-tooltip');
+    const selection = document.getElementById('sel-rate');
+    const panBtn = document.getElementById('tool-pan-rate');
+    const zoomBtn = document.getElementById('tool-zoom-rate');
+    const homeBtn = document.getElementById('tool-home-rate');
+    const defaultDomain = { xMin: 0, xMax: 5.6, yMin: 30, yMax: 44.5 };
+    const panBounds = { xMin: -1.12, xMax: 6.72, yMin: 27.1, yMax: 47.4 };
+    let domain = { ...defaultDomain };
+    const hidden = new Set();
+    let inner, xScale, yScale, invXScale, invYScale;
+    let interactionMode = 'pan';
+    let gesture = null;
+    const defs = svgEl('defs');
+    const clip = svgEl('clipPath', { id: 'rate-clip' });
+    const clipRect = svgEl('rect');
+    clip.appendChild(clipRect); defs.appendChild(clip); svg.appendChild(defs);
+    const plot = svgEl('g'); svg.appendChild(plot);
+
+    function highlight(key) {
+      plot.querySelectorAll('.method-series').forEach(group => group.setAttribute('opacity', !key || group.dataset.series === key ? 1 : .18));
+    }
+    function hideTooltip() { tooltip.style.opacity = '0'; tooltip.style.display = 'none'; highlight(null); }
+    function moveTooltip(ev) {
+      const rect = wrap.getBoundingClientRect();
+      let x = ev.clientX - rect.left + 12;
+      let y = ev.clientY - rect.top + 12;
+      if (x + tooltip.offsetWidth > rect.width) x -= tooltip.offsetWidth + 24;
+      if (y + tooltip.offsetHeight > rect.height) y -= tooltip.offsetHeight + 24;
+      tooltip.style.left = `${clamp(x, 0, Math.max(0, rect.width - tooltip.offsetWidth))}px`;
+      tooltip.style.top = `${clamp(y, 0, Math.max(0, rect.height - tooltip.offsetHeight))}px`;
+    }
+    function showPoint(ev, method, point) {
+      if (gesture) return;
+      highlight(method.key);
+      tooltip.replaceChildren();
+      const title = document.createElement('strong'); title.textContent = method.name; tooltip.appendChild(title);
+      [`Stored size: ${point.x.toFixed(4)} MB`, `PSNR: ${point.y.toFixed(4)} dB`, method.settings?.[point.index] || `Setting ${point.index + 1} of 5`].forEach(line => {
+        const row = document.createElement('div'); row.textContent = line; tooltip.appendChild(row);
+      });
+      tooltip.style.display = 'block'; tooltip.style.opacity = '1'; moveTooltip(ev);
+    }
+
+    function drawChart() {
+      hideTooltip(); plot.replaceChildren();
+      if (!wrap.clientWidth || !wrap.clientHeight) return;
+      // Scale the complete chart at narrow widths so labels and legend still fit.
+      const width = Math.max(320, wrap.clientWidth);
+      const displayScale = wrap.clientWidth / width;
+      const height = wrap.clientHeight / displayScale;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      const left = width < 540 ? 46 : 68;
+      const bottom = 88;
+      inner = { left, top: 16, width: width - left - 22, height: height - 16 - bottom };
+      const legend = document.getElementById('method-legend');
+      legend.style.right = `${30 * displayScale}px`;
+      legend.style.bottom = `${(bottom + 8) * displayScale}px`;
+      legend.style.transform = `scale(${displayScale})`;
+      Object.entries({ x: inner.left, y: inner.top, width: inner.width, height: inner.height }).forEach(([key, value]) => clipRect.setAttribute(key, value));
+      xScale = scaleLinear(domain.xMin, domain.xMax, inner.left, inner.left + inner.width);
+      yScale = scaleLinear(domain.yMin, domain.yMax, inner.top + inner.height, inner.top);
+      invXScale = scaleLinear(inner.left, inner.left + inner.width, domain.xMin, domain.xMax);
+      invYScale = scaleLinear(inner.top + inner.height, inner.top, domain.yMin, domain.yMax);
+      const grid = svgEl('g');
+      niceTicks(domain.xMin, domain.xMax, 6).forEach(tick => {
+        const x = xScale(tick);
+        grid.appendChild(svgEl('line', { x1: x, y1: inner.top, x2: x, y2: inner.top + inner.height, stroke: '#eee' }));
+        const label = svgEl('text', { x, y: inner.top + inner.height + 24, 'text-anchor': 'middle', class: 'tick-label x-tick' });
+        label.textContent = tick; grid.appendChild(label);
+      });
+      niceTicks(domain.yMin, domain.yMax, 7).forEach(tick => {
+        const y = yScale(tick);
+        grid.appendChild(svgEl('line', { x1: inner.left, y1: y, x2: inner.left + inner.width, y2: y, stroke: '#eee' }));
+        const label = svgEl('text', { x: inner.left - 10, y: y + 5, 'text-anchor': 'end', class: 'tick-label y-tick' });
+        label.textContent = tick; grid.appendChild(label);
+      });
+      plot.appendChild(grid);
+      plot.appendChild(svgEl('rect', { x: inner.left, y: inner.top, width: inner.width, height: inner.height, fill: 'none', stroke: '#777', 'stroke-width': 1.2 }));
+      const xlabel = svgEl('text', { x: inner.left + inner.width / 2, y: height - 26, 'text-anchor': 'middle', class: 'axis-label x-axis-label' });
+      xlabel.textContent = 'Stored size (MB)'; plot.appendChild(xlabel);
+      const ylabel = svgEl('text', { transform: `translate(19 ${inner.top + inner.height / 2}) rotate(-90)`, 'text-anchor': 'middle', class: 'axis-label' });
+      ylabel.textContent = 'PSNR (dB)'; plot.appendChild(ylabel);
+      const curves = svgEl('g', { 'clip-path': 'url(#rate-clip)' }); plot.appendChild(curves);
+      series.forEach(method => {
+        if (hidden.has(method.key)) return;
+        const points = method.values.map(([x, y], index) => ({ x, y, index })).sort((a, b) => a.x - b.x);
+        const group = svgEl('g', { class: 'method-series', 'data-series': method.key }); curves.appendChild(group);
+        const path = svgEl('path', { d: points.map((p, i) => `${i ? 'L' : 'M'} ${xScale(p.x)} ${yScale(p.y)}`).join(' '), fill: 'none', stroke: method.color, 'stroke-width': 1.8, 'stroke-dasharray': method.dash || 'none', class: 'series-path' });
+        group.appendChild(path);
+        path.addEventListener('pointerenter', () => { if (!gesture) highlight(method.key); });
+        path.addEventListener('pointerleave', hideTooltip);
+        points.forEach(point => {
+          const visible = point.x >= domain.xMin && point.x <= domain.xMax && point.y >= domain.yMin && point.y <= domain.yMax;
+          const mark = svgEl('g', { transform: `translate(${xScale(point.x)} ${yScale(point.y)})`, class: 'series-point', 'data-index': point.index, tabindex: visible ? 0 : -1, role: 'img', 'aria-label': `${method.name}, ${point.x.toFixed(4)} MB, ${point.y.toFixed(4)} dB, ${method.settings?.[point.index] || `setting ${point.index + 1}`}` });
+          mark.appendChild(svgEl('circle', { r: 9, fill: 'transparent' }));
+          mark.appendChild(marker(method, 5.5)); group.appendChild(mark);
+          mark.addEventListener('pointerenter', ev => showPoint(ev, method, point));
+          mark.addEventListener('pointermove', moveTooltip);
+          mark.addEventListener('pointerleave', hideTooltip);
+          mark.addEventListener('focus', () => {
+            const rect = mark.getBoundingClientRect(); showPoint({ clientX: rect.x + rect.width / 2, clientY: rect.y + rect.height / 2 }, method, point);
+          });
+          mark.addEventListener('blur', hideTooltip);
+        });
+      });
+    }
+
+    series.forEach(method => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'method-key'; button.dataset.series = method.key;
+      button.setAttribute('aria-pressed', 'true'); button.setAttribute('aria-label', `Show ${method.name}`);
+      const swatch = svgEl('svg', { viewBox: '0 0 32 16', 'aria-hidden': 'true' });
+      swatch.appendChild(svgEl('path', { d: 'M 0 8 H 32', stroke: method.color, 'stroke-width': 1.8, 'stroke-dasharray': method.dash || 'none' }));
+      const mark = marker(method, 4.5); mark.setAttribute('transform', 'translate(16 8)'); swatch.appendChild(mark);
+      button.append(swatch, document.createTextNode(method.name));
+      button.addEventListener('click', () => {
+        if (hidden.has(method.key)) hidden.delete(method.key); else hidden.add(method.key);
+        button.setAttribute('aria-pressed', String(!hidden.has(method.key))); drawChart();
+      });
+      button.addEventListener('pointerenter', () => highlight(method.key));
+      button.addEventListener('pointerleave', () => highlight(null));
+      document.getElementById('method-legend').appendChild(button);
+    });
+
+    function clientToSvg(x, y) {
+      const point = svg.createSVGPoint(); point.x = x; point.y = y;
+      return point.matrixTransform(svg.getScreenCTM().inverse());
+    }
+    function inPlotArea(p) { return p.x >= inner.left && p.x <= inner.left + inner.width && p.y >= inner.top && p.y <= inner.top + inner.height; }
+    function updateDomain(xMin, xMax, yMin, yMax, bounds = defaultDomain) {
+      const x = clampDomain(xMin, xMax, bounds.xMin, bounds.xMax, 5.6 / 80);
+      const y = clampDomain(yMin, yMax, bounds.yMin, bounds.yMax, 14.5 / 80);
+      domain = { xMin: x.min, xMax: x.max, yMin: y.min, yMax: y.max }; drawChart();
+    }
+    function cancelGesture() {
+      if (gesture && svg.hasPointerCapture(gesture.id)) svg.releasePointerCapture(gesture.id);
+      gesture = null; selection.style.display = 'none'; wrap.classList.remove('is-grabbing');
+    }
+    function resetZoom() { cancelGesture(); domain = { ...defaultDomain }; drawChart(); }
+    function updateBtnImage(button) {
+      const img = button.querySelector('img');
+      img.src = button.classList.contains('is-active') || button.matches(':hover') ? img.dataset.light : img.dataset.dark;
+    }
+    function setInteractionMode(mode) {
+      cancelGesture(); interactionMode = mode;
+      [panBtn, zoomBtn].forEach(button => {
+        const active = button === (mode === 'pan' ? panBtn : zoomBtn);
+        button.classList.toggle('is-active', active); button.setAttribute('aria-pressed', String(active)); updateBtnImage(button);
+      });
+      wrap.classList.toggle('zoom-mode', mode === 'zoom');
+    }
+    [panBtn, zoomBtn, homeBtn].forEach(button => {
+      button.addEventListener('mouseenter', () => updateBtnImage(button));
+      button.addEventListener('mouseleave', () => updateBtnImage(button));
+    });
+    panBtn.addEventListener('click', () => setInteractionMode('pan'));
+    zoomBtn.addEventListener('click', () => setInteractionMode('zoom'));
+    homeBtn.addEventListener('click', resetZoom);
+    svg.addEventListener('dblclick', ev => { ev.preventDefault(); resetZoom(); });
+    document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { cancelGesture(); hideTooltip(); } });
+    svg.addEventListener('wheel', ev => {
+      const point = clientToSvg(ev.clientX, ev.clientY); if (!inPlotArea(point)) return;
+      ev.preventDefault(); cancelGesture();
+      const factor = Math.exp(clamp(-ev.deltaY * .0012, -4, 4));
+      const spanX = (domain.xMax - domain.xMin) / factor;
+      const spanY = (domain.yMax - domain.yMin) / factor;
+      const xMin = invXScale(point.x) - (point.x - inner.left) / inner.width * spanX;
+      const yMax = invYScale(point.y) + (point.y - inner.top) / inner.height * spanY;
+      updateDomain(xMin, xMin + spanX, yMax - spanY, yMax);
+    }, { passive: false });
+    svg.addEventListener('pointerdown', ev => {
+      if (ev.button !== 0 || gesture) return;
+      const point = clientToSvg(ev.clientX, ev.clientY); if (!inPlotArea(point)) return;
+      ev.preventDefault(); hideTooltip();
+      gesture = { id: ev.pointerId, start: point, last: point, mode: interactionMode };
+      svg.setPointerCapture(ev.pointerId);
+      if (interactionMode === 'pan') wrap.classList.add('is-grabbing');
+    });
+    svg.addEventListener('pointermove', ev => {
+      if (!gesture || gesture.id !== ev.pointerId) return;
+      const point = clientToSvg(ev.clientX, ev.clientY);
+      if (gesture.mode === 'pan') {
+        const dx = invXScale(gesture.last.x) - invXScale(point.x);
+        const dy = invYScale(gesture.last.y) - invYScale(point.y);
+        gesture.last = point;
+        updateDomain(domain.xMin + dx, domain.xMax + dx, domain.yMin + dy, domain.yMax + dy, panBounds);
+      } else {
+        const x = clamp(point.x, inner.left, inner.left + inner.width);
+        const y = clamp(point.y, inner.top, inner.top + inner.height);
+        const rect = wrap.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+        selection.style.left = `${Math.min(gesture.start.x, x) / vb.width * rect.width}px`;
+        selection.style.top = `${Math.min(gesture.start.y, y) / vb.height * rect.height}px`;
+        selection.style.width = `${Math.abs(x - gesture.start.x) / vb.width * rect.width}px`;
+        selection.style.height = `${Math.abs(y - gesture.start.y) / vb.height * rect.height}px`;
+        selection.style.display = 'block';
+      }
+    });
+    svg.addEventListener('pointerup', ev => {
+      if (!gesture || gesture.id !== ev.pointerId) return;
+      const start = gesture.start, mode = gesture.mode;
+      const point = clientToSvg(ev.clientX, ev.clientY); cancelGesture();
+      if (mode !== 'zoom') return;
+      const x = clamp(point.x, inner.left, inner.left + inner.width);
+      const y = clamp(point.y, inner.top, inner.top + inner.height);
+      if (Math.abs(x - start.x) < 8 || Math.abs(y - start.y) < 8) return;
+      updateDomain(invXScale(Math.min(start.x, x)), invXScale(Math.max(start.x, x)), invYScale(Math.max(start.y, y)), invYScale(Math.min(start.y, y)));
+    });
+    svg.addEventListener('pointercancel', cancelGesture);
+    svg.addEventListener('lostpointercapture', () => { gesture = null; selection.style.display = 'none'; wrap.classList.remove('is-grabbing'); });
+    let lastWidth = 0, lastHeight = 0;
+    new ResizeObserver(() => {
+      if (wrap.clientWidth !== lastWidth || wrap.clientHeight !== lastHeight) {
+        lastWidth = wrap.clientWidth; lastHeight = wrap.clientHeight; cancelGesture(); drawChart();
+      }
+    }).observe(wrap);
+    drawChart();
+
+    // Report intrinsic content height, not the iframe viewport height (which would
+    // create a resize feedback loop). ResizeObserver also covers text reflow.
+    const figure = document.querySelector('.figure');
+    function reportHeight() {
+      if (window.self === window.top) return;
+      const rect = figure.getBoundingClientRect();
+      const height = Math.ceil(Math.max(rect.height, figure.scrollHeight));
+      window.parent.postMessage({ type: 'rate-distortion:resize', height }, '*');
+    }
+    new ResizeObserver(reportHeight).observe(figure);
+    window.addEventListener('load', reportHeight);
+    document.fonts?.ready.then(reportHeight);
+    requestAnimationFrame(reportHeight);
+  </script>
+</body>
+</html>

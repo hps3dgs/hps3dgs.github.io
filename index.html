@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="Physics-aware hierarchical 3DGS compression for aerospace objects and on-orbit servicing.">
-  <meta name="keywords" content="3DGS, compression, aerospace, satellite, on-orbit servicing">
+  <meta name="description" content="Hierarchical prototype sharing for 3D Gaussian Splatting compression of aerospace objects: shared Gaussian templates and appearance codebooks, averaging 0.72 MB at 40.88 dB.">
+  <meta name="keywords" content="3DGS, prototype sharing, compression, aerospace, satellite, appearance codebooks">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Physics-Aware Hierarchical 3DGS Compression</title>
+  <title>Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
   <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/logo.png">
 
@@ -23,20 +22,21 @@
 
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+    <button type="button" class="navbar-burger" aria-label="Open navigation" aria-expanded="false" aria-controls="main-menu">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
-    </a>
+    </button>
   </div>
-  <div class="navbar-menu">
+  <div class="navbar-menu" id="main-menu">
     <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="#top">
+      <a class="navbar-item" href="#top" aria-label="Home">
         <span class="icon"><i class="fas fa-home"></i></span>
       </a>
       <a class="navbar-item" href="#abstract">Abstract</a>
       <a class="navbar-item" href="#method">Method</a>
       <a class="navbar-item" href="#results">Results</a>
+      <a class="navbar-item" href="#downstream">Downstream</a>
       <a class="navbar-item" href="#bibtex">BibTeX</a>  
     </div>
   </div>
@@ -47,7 +47,7 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Physics-Aware Hierarchical 3DGS Compression: An Efficient Representation for Aerospace Objects</h1>
+          <h1 class="title is-1 publication-title">Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects</h1>
 
           <div class="is-size-5 publication-authors">
             <span class="author-block">----  Blind Review Version  ----</span>
@@ -71,19 +71,19 @@
           <div class="columns is-centered metric-row mt-5">
             <div class="column is-one-third">
               <div class="metric-box">
-                <div class="metric-value">&gt; 5.5&times;</div>
+                <div class="metric-value">15&times;</div>
                 <div class="metric-label">storage compression</div>
               </div>
             </div>
             <div class="column is-one-third">
               <div class="metric-box">
-                <div class="metric-value">~ 2 MB</div>
+                <div class="metric-value">0.7 MB</div>
                 <div class="metric-label">compact payload</div>
               </div>
             </div>
             <div class="column is-one-third">
               <div class="metric-box">
-                <div class="metric-value">&gt; 30 dB</div>
+                <div class="metric-value">39 dB</div>
                 <div class="metric-label">high-fidelity rendering</div>
               </div>
             </div>
@@ -95,6 +95,15 @@
   </div>
 </section>
 
+<section class="section" id="video">
+  <div class="container is-max-desktop">
+    <video controls playsinline preload="metadata" poster="./static/video/vedio1025/vedio1025.jpg" style="display: block; width: 100%; height: auto;">
+      <source src="./static/video/vedio1025/vedio1025.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</section>
+
 <section class="section" id="abstract" style="background-color: #f5f5f5;">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
@@ -102,19 +111,15 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-          While 3D Gaussian Splatting (3DGS) has revolutionized real-time photorealistic rendering, its unstructured and discrete nature incurs substantial storage and transmission overhead, impeding its deployment on resource-constrained edge platforms.
-          Existing 3DGS compression methods are predominantly driven by signal-level redundancy, leaving object-level structural regularity and material sparsity untapped in industrial assets such as aerospace targets. 
-          To explicitly capitalize on these physical priors, we propose a physics-aware hierarchical 3DGS framework that shifts the compression paradigm toward semantic-level structural reassembly.
-          Specifically, a geometry layer condenses repetitive structures into compact meta templates via a coarse-to-fine cascade: spectral divergence pruning, robust rigid alignment, and alternating differentiable refinement. Subsequently, an appearance layer exploits material sparsity through component-wise vector quantization.
-          Extensive evaluations across diverse aerospace scenarios, including high-fidelity synthetic models and real-world mock-ups, demonstrate that our method effectively copes with the rate-distortion bottlenecks of current compression paradigms. 
-          It reduces the explicit 3D representation to approximately 2 MB, achieving a storage compression ratio of at least 5.5$\times$ while maintaining high-fidelity visual quality above 30 dB.
-          By synergistically decoupling spatial topology and material statistics, our method preserves structural integrity and delivers a robust, memory-efficient 3D representation for bandwidth-constrained autonomous perception.
+          While 3D Gaussian Splatting (3DGS) has revolutionized real-time photorealistic rendering, its unstructured and discrete nature introduces critical storage and telemetry limitations for robotic and spaceborne perception platforms. Existing 3DGS compression methods are predominantly driven by signal-level redundancy, while explicit sharing of repeated component structures offers an additional route to compression for aerospace objects. To explicitly capitalize on these industrial priors, we propose hierarchical prototype sharing for 3DGS compression, in which the compression paradigm is shifted toward semantic-level structural reassembly. Specifically, a geometry layer condenses repetitive structures into compact meta templates via a coarse-to-fine cascade: spectral divergence pruning, robust rigid alignment, and alternating differentiable refinement. Subsequently, an appearance layer exploits material sparsity through component-wise vector quantization. Extensive evaluations across diverse aerospace scenarios, including high-fidelity synthetic models and real-world mock-ups, demonstrate that our method effectively copes with the rate-distortion bottlenecks of current compression paradigms. It reduces the explicit 3D representation to approximately 0.7 MB, achieving a storage compression ratio of at least 15&times while maintaining high-fidelity visual quality above 39 dB. By combining structural sharing with appearance encoding, our method preserves structural integrity and delivers a memory-efficient 3D representation for bandwidth-constrained autonomous perception.
           </p>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+
 
 <section class="section" id="method">
   <div class="container is-max-desktop">
@@ -125,15 +130,15 @@
     </div>
 
     <div class="mt-5" style="max-width: 100%">
-      <img src="./static/images/pipeline.svg" alt="Overall pipeline">
-      <p class="figure-caption"><strong>The overall pipeline of the proposed framework.</strong> First, an unstructured Gaussian field is decomposed into semantic components. Then, a hierarchical representation is constructed with a geometry layer and an appearance layer. Finally, the compact representation is packed for efficient storage and real-time rendering.</p>
+      <img src="./static/images/pipeline.svg" alt="Hierarchical prototype sharing: semantic decomposition, rigid template sharing, and quantized appearance encoding">
+      <p class="figure-caption"><strong>The overall pipeline of the proposed framework.</strong> First, an unstructured Gaussian field is decomposed into semantic components. Then, a hierarchical representation is constructed with a geometry layer and an appearance layer. Finally, the compact data is packed for efficient storage and real-time rendering.</p>
       <div style="height:20px;"></div>
     </div>
 
     <div class="columns is-centered is-variable is-5">
       <div class="column is-centered">
-          <img src="./static/images/system.gif" alt="Space-ground computation architecture" style="display:block; margin:0 auto; max-width:600px;">
-          <p class="figure-caption"><strong>Integrated space-ground computational architecture for on-orbit servicing missions.</strong> A servicing satellite captures multi-view images of a target. Large-scale computation is performed on ground supercomputers.</p><div style="height:20px;"></div>
+          <img src="./static/images/system.gif" alt="Space-ground computation architecture" style="display:block; margin:0 auto; max-width:600px; width:100%;">
+          <p class="figure-caption"><strong>Integrated space-ground computational architecture for on-orbit servicing missions.</strong> Multi-view imagery is downlinked for training and compression on the ground. Compact models are uplinked for reconstruction and downstream perception; the diagram illustrates the intended architecture.</p><div style="height:20px;"></div>
       </div>
     </div>
   </div>
@@ -148,16 +153,15 @@
       </div>
     </div>
 
-      <iframe src="./static/plots/size_psnr_num.html" title="Rate-distortion comparison" style="width:100%; height:450px; border:0; display:block;"></iframe>
+    <iframe class="plot-frame" id="rate-distortion-frame" src="./static/plots/rate_distortion.html" title="Interactive rate-distortion curves across compression settings" style="height: 760px;"></iframe>
+    <iframe class="plot-frame" src="./static/plots/size_psnr_num.html" title="Default-configuration comparison of storage, primitive count, and PSNR"></iframe>
 
-      <iframe src="./static/plots/ablation_curves.html" title="Ablation curves" style="width:100%; height:450px; border:0; display:block; margin-top:18px;"></iframe>
-
+    <iframe class="plot-frame" src="./static/plots/ablation_curves.html" title="Pruning-threshold and codebook-size ablations"></iframe>
 
   </div>
     
     <div class="visual-comparisons mt-6">
-      <h3 class="title is-4 has-text-centered">Visual Comparisons (Videos)</h3>
-
+      <h3 class="title is-4 has-text-centered">Visual Comparisons</h3>
       <style>
         .vc-grid { display:grid; gap:18px; margin-top:18px; justify-content:center; --vc-card-width: calc((100% - 36px) / 3); }
         .vc-grid-2 { grid-template-columns: repeat(2, minmax(0, var(--vc-card-width))); }
@@ -214,7 +218,7 @@
               <div class="vc-inner">
                 <div class="vc-side vc-left-wrap"><div class="vc-side-split vc-left-split"><img class="vc-left" src="${leftSrc}" alt="${leftLabel}"></div></div>
                 <div class="vc-side vc-right-wrap"><div class="vc-side-split vc-right-split"><img class="vc-right" src="${rightSrc}" alt="${rightLabel}"></div></div>
-                <div class="vc-divider"><div class="vc-handle"></div></div>
+                <div class="vc-divider" role="slider" tabindex="0" aria-label="${title}: image comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><div class="vc-handle"></div></div>
               </div>
               <div class="vc-caption-row">
                 <div class="vc-caption">${leftLabel}</div>
@@ -260,21 +264,30 @@
               x = Math.max(6, Math.min(rect.width-6, x));
               inner.style.setProperty('--split-x', `${x}px`);
               divider.style.left = x + 'px';
+              divider.setAttribute('aria-valuenow', Math.round(x / rect.width * 100));
             }
             function startDrag(e){
               dragging = true;
               setDividerByClientX(e.clientX);
               e.preventDefault();
             }
-            divider.addEventListener('mousedown', startDrag);
-            inner.addEventListener('mousedown', startDrag);
-            window.addEventListener('mousemove', (e)=>{ if(!dragging) return; setDividerByClientX(e.clientX); });
-            window.addEventListener('mouseup', ()=>{ dragging=false; });
+            inner.addEventListener('pointerdown', (e) => { inner.setPointerCapture(e.pointerId); startDrag(e); });
+            inner.addEventListener('pointermove', (e)=>{ if(dragging) setDividerByClientX(e.clientX); });
+            inner.addEventListener('pointerup', ()=>{ dragging=false; });
+            inner.addEventListener('pointercancel', ()=>{ dragging=false; });
+            divider.addEventListener('keydown', (e) => {
+              if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+              e.preventDefault();
+              const rect = inner.getBoundingClientRect();
+              let percent = Number(divider.getAttribute('aria-valuenow'));
+              percent = e.key === 'Home' ? 0 : e.key === 'End' ? 100 : percent + (e.key === 'ArrowRight' ? 5 : -5);
+              setDividerByClientX(rect.left + rect.width * percent / 100);
+            });
             // allow click on container to move divider immediately
             inner.addEventListener('click', (e)=>{ if(e.target === divider || e.target === handle) return; setDividerByClientX(e.clientX); });
 
             // initialize divider center
-            function init(){ const rect = inner.getBoundingClientRect(); const w = rect.width || inner.offsetWidth || 640; const x = Math.round(w/2); inner.style.setProperty('--split-x', `${x}px`); divider.style.left = x+'px'; applyTrimLayout(); }
+            function init(){ const rect = inner.getBoundingClientRect(); const w = rect.width || inner.offsetWidth || 640; const x = Math.round(w/2); inner.style.setProperty('--split-x', `${x}px`); divider.style.left = x+'px'; divider.setAttribute('aria-valuenow', '50'); applyTrimLayout(); }
             // resize observer
             const ro = new ResizeObserver(()=>init()); ro.observe(inner);
             // try to init after load
@@ -288,13 +301,26 @@
     </div>
 </section>
 
+
+<section class="section" id="downstream">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3 has-text-centered">Downstream Pose Refinement</h2>
+    <figure class="paper-figure">
+      <video autoplay muted loop playsinline controls preload="metadata" aria-label="Ground-truth and estimated trajectories for circular observation and spiral approach" style="display: block; width: 100%; height: auto;">
+        <source src="./static/video/pose_trajectories.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </figure>
+  </div>
+</section>
+
 <section class="section" id="bibtex">
   <div class="container is-max-desktop content">
     <h2 class="title has-text-centered">BibTeX</h2>
-    <pre><code>@article{Yang2026PAH3DGS,
-  author  = {Hiding for Blind Review},
-  title   = {Physics-Aware Hierarchical 3DGS Compression: An Efficient Representation for Aerospace Objects},
-  year    = {2026}
+    <pre><code>@misc{HPS3DGS2026,
+  title   = {Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects},
+  year    = {2026},
+  note    = {Blind review manuscript}
 }</code></pre>
   </div>
 </section>
@@ -302,20 +328,17 @@
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-        <a onclick="alert('The paper link will be provided after publication.')" class="icon-link">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/DazhuangYang/pahc3dgs">
+      <a class="icon-link" aria-label="Source code" href="https://github.com/DazhuangYang/pahc3dgs">
         <i class="fab fa-github"></i>
       </a>
-      <a class="icon-link" href="mailto:yang_dazhuang@mail.nwpu.edu.cn" onclick="alert('If you have any questions, please feel free to email me at yang_dazhuang@mail.nwpu.edu.cn.')">
+      <a class="icon-link" aria-label="Contact" href="mailto:yang_dazhuang@mail.nwpu.edu.cn" onclick="alert('If you have any questions, please feel free to email me at yang_dazhuang@mail.nwpu.edu.cn.')">
         <i class="fas fa-envelope"></i>
       </a>
     </div>
     <div class="columns is-centered">
       <div class="column is-8">
         <div class="content has-text-centered">
-          <p>This site summarizes the PAHC-3DGS paper and its main figures.</p>
+          <p>This site presents Hierarchical Prototype Sharing for 3D Gaussian Splatting Compression of Aerospace Objects.</p>
         </div>
       </div>
     </div>

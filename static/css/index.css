@@ -2,6 +2,23 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
+.summary-note { max-width: 900px; margin: 1rem auto 1.5rem; color: #555; text-align: center; font-size: .92rem; line-height: 1.65; }
+.protocol-note { margin: 1.5rem 0 2rem; padding: 1.2rem 1.5rem; background: #f5f8fc; border-left: 3px solid #3273dc; border-radius: 6px; }
+.method-details { margin-top: 1.25rem; }
+.plot-frame { display: block; width: 100%; height: 520px; border: 0; margin: 2rem 0; }
+.results-table { font-size: .9rem; }
+.results-table td, .results-table th { vertical-align: middle; white-space: nowrap; }
+.results-table caption { caption-side: bottom; padding: .8rem; text-align: left; color: #555; font-size: .85rem; }
+.paper-figure { margin: 2rem auto; text-align: center; }
+.paper-figure img { width: 100%; height: auto; object-fit: contain; }
+.paper-figure figcaption { margin: .8rem auto; color: #555; font-size: .92rem; line-height: 1.65; }
+.content figure.paper-figure { margin: 1.5rem 0; }
+#downstream { background: #f7f9fc; }
+@media screen and (max-width: 768px) {
+  .protocol-note { padding: 1rem; }
+  .plot-frame { height: 850px; }
+}
+
 .non-selectable {
   user-select: none;
 }
