@@ -1,2 +1,13 @@
-.DS_store
-.idea
+# Local system and editor files
+.DS_Store
+.idea/
+
+# Local assistant settings and preview artifacts
+/.claude/
+/.playwright-cli/
+/output/
+
+# Local Python environment and caches
+/.venv/
+__pycache__/
+*.py[cod]
