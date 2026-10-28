@@ -60,7 +60,7 @@
               </a>
             </span>
             <span class="link-block">
-              <a href="https://github.com/DazhuangYang/pahc3dgs" class="external-link button is-normal is-rounded is-dark">
+              <a href="../HPS3DGS.zip" onclick="document.getElementById('code-download-dialog').showModal(); return false;" class="external-link button is-normal is-rounded is-dark" aria-haspopup="dialog" aria-controls="code-download-dialog">
                 <span class="icon"><i class="fab fa-github"></i></span>
                 <span>Code</span>
               </a>
@@ -342,6 +342,17 @@
     </div>
   </div>
 </footer>
+
+<dialog id="code-download-dialog" aria-labelledby="code-download-title" aria-describedby="code-download-description" style="max-width: 32rem; width: calc(100% - 2rem); padding: 1.5rem; border: none; border-radius: 12px;">
+  <h2 id="code-download-title" class="title is-4">Code Download</h2>
+  <p id="code-download-description">An open-source code archive is currently available for reference. The official version will be uploaded to GitHub after the paper is formally accepted.</p>
+  <div class="buttons is-right mt-5">
+    <form method="dialog">
+      <button type="submit" class="button is-rounded">Close</button>
+    </form>
+    <a href="../HPS3DGS.zip" download class="button is-rounded is-dark">download</a>
+  </div>
+</dialog>
 
 </body>
 </html>
